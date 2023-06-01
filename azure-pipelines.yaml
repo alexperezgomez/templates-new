@@ -1,8 +1,11 @@
-# Starter pipeline
 
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+resources:
+  repositories:
+  - repository: repo-template
+    type: github
+    name: swo-agarcia/tf_lab
+    endpoint: swo-agarcia
+    ref: 'refs/heads/main'
 
 trigger:
   branches:
@@ -15,19 +18,7 @@ trigger:
     exclude:
     - demo
 
-# pool:
-#   vmImage: ubuntu-latest
-  
-# parameters:
-# - name: action
-#   displayName: Accion a ejecutar
-#   type: string
-#   default: deploy
-#   values:
-#   - check
-#   - deploy
-#   - destroy
-#   - init
+
   
 variables:
 - group: variables-demo-lab-aws-tf
@@ -38,109 +29,8 @@ variables:
   
 jobs:
 
-- template: templates/job-pipeline-template.yaml  # Template reference
+- template: templates/job-pipeline-template.yaml@repo-template  # Template reference
   parameters:
     action: destroy
     pool:
       vmImage: ubuntu-latest
-
-
-# steps:
-
-# - task: replacetokens@5
-#   displayName: Replace variables
-#   inputs:
-#     rootDirectory: '$(route)'
-#     targetFiles: '$(tfvars-file)'
-#     encoding: 'auto'
-#     tokenPattern: 'default'
-#     writeBOM: false
-#     actionOnMissing: 'warn'
-#     keepToken: false
-#     actionOnNoFiles: 'continue'
-#     enableTransforms: false
-#     enableRecursion: false
-#     useLegacyPattern: false
-#     enableTelemetry: false
-    
-# - task: Bash@3
-#   displayName: Show variables
-#   inputs:
-#     targetType: 'inline'
-#     workingDirectory: '$(route)'
-#     script: 'cat $(tfvars-file)'
-    
-# - task: AWSShellScript@1
-#   displayName: 'Terraform Init'
-#   inputs:
-#     awsCredentials: 'sc-demo-lab-aws-tf'
-#     regionName: 'us-east-1'
-#     scriptType: 'inline'
-#     disableAutoCwd: true
-#     workingDirectory: '$(route)'
-#     inlineScript: |
-#       terraform init
-#       aws sts get-caller-identity
-      
-# - ${{ if eq(parameters.action, 'deploy') }}:
-
-#   - task: AWSShellScript@1
-#     displayName: 'Terraform Plan'
-#     inputs:
-#       awsCredentials: 'sc-demo-lab-aws-tf'
-#       regionName: 'us-east-1'
-#       scriptType: 'inline'
-#       inlineScript: 'terraform plan'
-#       disableAutoCwd: true
-#       workingDirectory: '$(route)'
-
-#   - task: AWSShellScript@1
-#     displayName: 'Terraform Apply'
-#     inputs:
-#       awsCredentials: 'sc-demo-lab-aws-tf'
-#       regionName: 'us-east-1'
-#       scriptType: 'inline'
-#       inlineScript: 'terraform apply -auto-approve'
-#       disableAutoCwd: true
-#       workingDirectory: '$(route)'
-
-# - ${{ if eq(parameters.action, 'check') }}:
-
-#   - task: AWSShellScript@1
-#     displayName: 'Terraform Refresh'
-#     inputs:
-#       awsCredentials: 'sc-demo-lab-aws-tf'
-#       regionName: 'us-east-1'
-#       scriptType: 'inline'
-#       inlineScript: 'terraform refresh " -auto-approve'
-#       disableAutoCwd: true
-#       workingDirectory: '$(route)'
-
-#   - task: AWSShellScript@1
-#     displayName: 'Terraform Plan'
-#     inputs:
-#       awsCredentials: 'sc-demo-lab-aws-tf'
-#       regionName: 'us-east-1'
-#       scriptType: 'inline'
-#       inlineScript: 'terraform plan'
-#       disableAutoCwd: true
-#       workingDirectory: '$(route)'
-
-# - ${{ if eq(parameters.action, 'destroy') }}:
-
-#   - task: AWSShellScript@1
-#     displayName: 'Terraform Refresh'
-#     inputs:
-#       awsCredentials: 'sc-demo-lab-aws-tf'
-#       regionName: 'us-east-1'
-#       scriptType: 'inline'
-#       inlineScript: 'terraform destroy -auto-approve'
-#       disableAutoCwd: true
-#       workingDirectory: '$(route)'
-
-
-# - script: |
-#       pwd
-#       cd $(System.DefaultWorkingDirectory)/demo/configuration
-#       ls -lrtha
-#   displayName: 'Show Terraform files'
