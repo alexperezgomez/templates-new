@@ -1,0 +1,41 @@
+# Deployment Pipeline
+
+resources:
+  - repo: self
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - configuration
+    - README.md
+
+variables: 
+- group: laboratorio-backend-aws
+- name: route
+  value: $(System.DefaultWorkingDirectory)/configuration/
+- name: tfvars-file
+  value: bucket.tfvars
+
+extends:
+  template: /templates/extends-template.yaml
+  parameters:
+    deployStages:
+    - stage: aws_dev
+      displayName: AWS Deploy Dev
+      jobs: 
+      # job template
+      - template: /templates/job-template.yaml
+        parameters:
+          environment: lab-extends-test-gate-dev
+          action: check
+          cloud: aws
+
+    # - stage: aws_prod
+    #   displayName: AWS Deploy Prod
+    #   jobs:
+    #   - template: templates/job-template.yaml
+    #     parameters:
+    #       environment: ld-secret-scanning-test-gate-prod
