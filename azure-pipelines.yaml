@@ -31,6 +31,6 @@ jobs:
 
 - template: templates/job-pipeline-template.yaml@repo-template  # Template reference
   parameters:
-    action: destroy
+    action: deploy
     pool:
       vmImage: ubuntu-latest
